@@ -26,6 +26,7 @@ dependencies {
 
     // Local dependency for AIMA classes
     implementation files('libs/AIMA.jar')
+    implementation files('libs/DistributedFS.jar')
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
