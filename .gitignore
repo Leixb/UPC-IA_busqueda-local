@@ -1,5 +1,16 @@
-# Ignore Gradle project-specific cache directory
 .gradle
-
-# Ignore Gradle build output directory
 build
+
+out
+server
+node_modules
+*.vsix
+.DS_Store
+.vscode-test
+undefined
+target
+dist
+bin/
+.settings
+.classpath
+.project
