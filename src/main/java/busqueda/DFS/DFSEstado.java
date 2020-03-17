@@ -1,4 +1,4 @@
-package busqueda.local;
+package busqueda.DFS;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -7,7 +7,7 @@ import java.util.Set;
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
 
-public class Estado {
+public class DFSEstado {
 
     // Para cada id de request, id del server que proveera el archivo.
     private final int []servidor;
@@ -16,11 +16,11 @@ public class Estado {
     private static Requests requests;
 
     public static void init(final Servers serv, final Requests req) {
-        Estado.servers = serv;
-        Estado.requests = req;
+        DFSEstado.servers = serv;
+        DFSEstado.requests = req;
     }
 
-    public Estado() {
+    public DFSEstado() {
         // loop through the requests and assign first server.
         servidor = new int[requests.size()];
         for (int i=0; i < requests.size(); ++i) {
@@ -34,7 +34,7 @@ public class Estado {
         }
     }
 
-    public Estado(final int[] estado)  {
+    public DFSEstado(final int[] estado)  {
         // Copiamos el array
         this.servidor = Arrays.copyOf(estado, estado.length);
     }
