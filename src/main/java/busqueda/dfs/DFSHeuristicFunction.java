@@ -1,4 +1,4 @@
-package busqueda.DFS;
+package busqueda.dfs;
 
 import aima.search.framework.HeuristicFunction;
 
@@ -14,6 +14,12 @@ public class DFSHeuristicFunction implements HeuristicFunction {
     public double getHeuristicValue(Object arg0) {
         // TODO Auto-generated method stub
         return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO Auto-generated method stub
+        return super.hashCode();
     }
 
 }

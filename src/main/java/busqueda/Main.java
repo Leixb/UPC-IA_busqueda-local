@@ -1,6 +1,6 @@
 package busqueda;
 
-import busqueda.DFS.*;
+import busqueda.dfs.*;
 
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
