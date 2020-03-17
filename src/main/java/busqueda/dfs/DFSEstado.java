@@ -1,4 +1,4 @@
-package busqueda.DFS;
+package busqueda.dfs;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -26,7 +26,7 @@ public class DFSEstado {
         for (int i=0; i < requests.size(); ++i) {
             // [UserID, FileID]
             final int[] req = requests.getRequest(i);
-            final Set<java.lang.Integer> locations = servers.fileLocations(req[1]);
+            final Set<Integer> locations = servers.fileLocations(req[1]);
 
             // Assign first server of the set. (Assumes not empty set)
             servidor[i] = locations.iterator().next(); // serverID
