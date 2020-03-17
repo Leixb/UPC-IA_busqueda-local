@@ -3,12 +3,31 @@
  */
 package busqueda.local;
 
+import IA.DistFS.Requests;
+import IA.DistFS.Servers;
+import IA.DistFS.Servers.WrongParametersException;
+
 public class Main {
-    public String getGreeting() {
-        return "Hello world.";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new Main().getGreeting());
+
+        int nserv = 10,
+            nrep = 5,
+            users = 20,
+            requests = 15,
+            seeds = 1234, // TODO: Proper seeding
+            seedr = 4321;
+
+        Servers serv;
+		try {
+			serv = new Servers(nserv, nrep, seeds);
+            Requests req = new Requests(users, requests, seedr);
+
+            Estado.init(serv, req);
+		} catch (WrongParametersException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        Estado estado = new Estado();
     }
 }
