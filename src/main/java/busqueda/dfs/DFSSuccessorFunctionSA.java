@@ -34,7 +34,7 @@ public class DFSSuccessorFunctionSA implements SuccessorFunction {
         newEstado.set(i, location);
 
         final double v = DFSHF.getHeuristicValue(newEstado);
-        final String S = String.format("Request: %i Coste(%i) ---> %s", i, v, newEstado.toString());
+        final String S = String.format("Request: %d Coste(%f) ---> %s", i, v, newEstado.toString());
         retVal.add(new Successor(S, newEstado));
 
         return retVal;
