@@ -2,6 +2,8 @@ package busqueda;
 
 import busqueda.dfs.*;
 
+import java.util.Random;
+
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
 import IA.DistFS.Servers.WrongParametersException;
@@ -10,12 +12,14 @@ public class Main {
 
     public static void main(String[] args) {
 
+        Random rand = new Random();
+
         int nserv = 10,
             nrep = 5,
             users = 20,
             requests = 15,
-            seeds = 1234, // TODO: Proper seeding
-            seedr = 4321;
+            seeds = rand.nextInt(),
+            seedr = rand.nextInt();
 
         Servers serv;
 		try {
