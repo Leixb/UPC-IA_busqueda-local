@@ -82,26 +82,20 @@ public class DFSEstado {
         return totalTime*sd; //TODO: mejorar como hacer esta heuristica
     }
 
-	// changes server that gives file for ith request.
-    // returns false if it fails
-    // makes no real sense
-    public boolean change(final int i) {
+    // changes server that gives file for ith request.
+    public void set(final int i, final int serv) {
         // [UserID, FileID]
+        servidor[i] = serv;
+    }
+
+    // All posible file locations for request i different from current one.
+    public Set<Integer> locations(final int i) {
         final int[] req = requests.getRequest(i);
 
         final Set<Integer> locations = servers.fileLocations(req[1]);
+        locations.remove(servidor[i]);
 
-        final Iterator<Integer> it = locations.iterator(); // serverID
-
-        while (it.hasNext()) {
-            final int serv = it.next();
-            if (serv != servidor[i]) {
-                servidor[i] = serv;
-                return true;
-            }
-        }
-
-        return false;
+        return locations;
     }
 
     /* funcions auxiliars */
