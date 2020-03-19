@@ -13,6 +13,7 @@ import aima.search.framework.Problem;
 import aima.search.framework.Search;
 import aima.search.framework.SearchAgent;
 import aima.search.informed.HillClimbingSearch;
+import aima.search.informed.SimulatedAnnealingSearch;
 
 public class Main {
 
@@ -27,6 +28,13 @@ public class Main {
             seeds = rand.nextInt(),
             seedr = rand.nextInt();
 
+        System.out.printf(
+                "nserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
+                + "seeds = %d\nseedr = %d\n", 
+            nserv , nrep , users, requests ,
+            seeds , seedr
+            );
+
         Servers serv;
 		try {
 			serv = new Servers(nserv, nrep, seeds);
@@ -34,11 +42,17 @@ public class Main {
 
             DFSEstado.init(serv, req, nserv);
 		} catch (WrongParametersException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         DFSEstado estado = new DFSEstado();
 
+        DFSHillClimbingSearch(estado);
+        DFSHillSimulatedAnnealing(estado);
+
+    }
+
+    private static void DFSHillClimbingSearch(DFSEstado estado) {
+        System.out.println("\nDistFS HillClimbing --> ");
         try {
             Problem problem = new Problem(estado, new DFSSuccessorFunction(),
                     new DFSGoalTest(), new DFSHeuristicFunctionMax());
@@ -54,13 +68,37 @@ public class Main {
         }
     }
 
+    private static void DFSHillSimulatedAnnealing(DFSEstado estado) {
+        System.out.println("\nDistFS Simulated Annealing --> ");
+        try {
+            Problem problem = new Problem(estado, new DFSSuccessorFunctionSA(),
+                    new DFSGoalTest(), new DFSHeuristicFunctionMax());
+            // Search search = new SimulatedAnnealingSearch(2000, 100, 5, 0.001);
+            Search search = new SimulatedAnnealingSearch();
+            SearchAgent agent = new SearchAgent(problem, search);
+
+            System.out.println();
+
+
+            printActions(agent.getActions());
+            printInstrumentation(agent.getInstrumentation());
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
     private static void printInstrumentation(Properties properties) {
         //TODO
     }
     
     private static void printActions(List actions) {
         for (Object action : actions) {
-            System.out.println((String)action);
+            System.out.println(action.toString());
+            try {
+                System.out.println(new DFSHeuristicFunction().getHeuristicValue(action));
+            } catch (Exception e) {
+            }
         }
     }
     

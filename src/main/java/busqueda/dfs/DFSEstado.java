@@ -1,7 +1,6 @@
 package busqueda.dfs;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,6 +105,11 @@ public class DFSEstado {
 
     public int[] getEstado() {
         return servidor.clone();
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(servidor);
     }
 
 }
