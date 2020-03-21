@@ -4,10 +4,15 @@ import aima.search.framework.HeuristicFunction;
 
 public class DFSHeuristicFunction implements HeuristicFunction {
 
+    static HeuristicFunction func = new DFSHeuristicFunctionMax(); // Default to Max
+
+    static public void setHeurisitcFunction(HeuristicFunction f) {
+        func = f;
+    }
+
     @Override
     public double getHeuristicValue(Object arg0) {
-        return new DFSHeuristicFunctionMax().getHeuristicValue(arg0);
-        //return new DFSHeuristicFunctionTotal().getHeuristicValue(arg0);
+        return func.getHeuristicValue(arg0);
     }
 
 }
