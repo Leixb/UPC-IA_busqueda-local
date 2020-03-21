@@ -44,7 +44,9 @@ public class Main {
 		} catch (WrongParametersException e) {
 			e.printStackTrace();
 		}
-        DFSEstado estado = new DFSEstado();
+
+        final boolean findSmallest = true;
+        DFSEstado estado = new DFSEstado(findSmallest);
 
         DFSHillClimbingSearch(estado);
         DFSHillSimulatedAnnealing(estado);

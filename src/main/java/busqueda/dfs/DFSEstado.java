@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import java.util.Iterator;
+
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
 
@@ -24,16 +26,33 @@ public class DFSEstado {
         DFSEstado.nserv = nserv;
     }
 
-    public DFSEstado() {
+    public DFSEstado(boolean findSmallest) {
         // loop through the requests and assign first server.
         servidor = new int[requests.size()];
         for (int i=0; i < requests.size(); ++i) {
             // [UserID, FileID]
             final int[] req = requests.getRequest(i);
-            final Set<Integer> locations = servers.fileLocations(req[1]);
+            final int userID = req[0];
+            final int fileID = req[1];
 
-            // Assign first server of the set. (Assumes not empty set)
-            servidor[i] = locations.iterator().next(); // serverID
+            Iterator<Integer> it = servers.fileLocations(fileID).iterator();
+
+            // Assign first server of the set.
+            if (! it.hasNext()) throw new RuntimeException("No file locations for given file");
+            servidor[i] = it.next(); // serverID
+
+            // If findSmallest is true, find the server with the smallest trans time to the user
+            if (findSmallest) {
+                int mn = servers.tranmissionTime(servidor[i], userID);
+                while (it.hasNext()) { // Loop through all the servers that have fileID
+                    final int serverID = it.next();
+                    final int transTime = servers.tranmissionTime(serverID, userID);
+                    if (transTime < mn) {
+                        mn = transTime;
+                        servidor[i] = serverID;
+                    }
+                }
+            }
 
         }
     }
