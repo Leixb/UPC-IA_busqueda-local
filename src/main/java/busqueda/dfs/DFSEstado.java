@@ -1,12 +1,11 @@
 package busqueda.dfs;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import java.util.Iterator;
 
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
@@ -38,7 +37,9 @@ public class DFSEstado {
             Iterator<Integer> it = servers.fileLocations(fileID).iterator();
 
             // Assign first server of the set.
-            if (! it.hasNext()) throw new RuntimeException("No file locations for given file");
+            if (!it.hasNext()) {
+                throw new RuntimeException("No file locations for given fileID");
+            }
             servidor[i] = it.next(); // serverID
 
             // If findSmallest is true, find the server with the smallest trans time to the user
