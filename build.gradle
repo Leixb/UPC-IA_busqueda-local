@@ -25,7 +25,7 @@ dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
 
     // Local dependency for AIMA classes
-    implementation files('libs/AIMA.jar')
+    //implementation files('libs/AIMA.jar')
     implementation files('libs/DistributedFS.jar')
 
     // Use JUnit test framework
