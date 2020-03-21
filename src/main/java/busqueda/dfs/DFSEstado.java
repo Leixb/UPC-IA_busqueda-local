@@ -15,6 +15,10 @@ public class DFSEstado {
     // Para cada id de request, id del server que proveera el archivo.
     private final int []servidor;
 
+    private int last_id = -1;
+    private int last_orig = -1;
+    private int last_new = -1;
+
     private static Servers servers;
     private static Requests requests;
     private static int nserv;
@@ -103,7 +107,10 @@ public class DFSEstado {
 
     // changes server that gives file for ith request.
     public void set(final int i, final int serv) {
-        // [UserID, FileID]
+        last_id = i;
+        last_orig = servidor[i];
+        last_new = serv;
+
         servidor[i] = serv;
     }
 
@@ -129,7 +136,8 @@ public class DFSEstado {
 
     @Override
     public String toString() {
-        return Arrays.toString(servidor);
+        return String.format("ID(%d): %d --> %d", last_id, last_orig, last_new);
+        //return Arrays.toString(servidor);
     }
 
 }
