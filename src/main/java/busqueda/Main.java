@@ -5,6 +5,7 @@ import busqueda.dfs.*;
 import java.util.Random;
 import java.util.List;
 import java.util.Properties;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import IA.DistFS.Requests;
@@ -62,9 +63,11 @@ public class Main {
             }
         }
 
+        System.out.println("Configuracion");
         System.out.printf(
-                "nserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
+                "findSmallest = %b\nnserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
                 + "seeds = %d\nseedr = %d\n", 
+            generador==1,
             nserv , nrep , users, requests ,
             seeds , seedr
             );
@@ -83,6 +86,11 @@ public class Main {
         final boolean findSmallest = (generador == 1);
         DFSEstado estado = new DFSEstado(findSmallest);
 
+        printSep();
+        System.out.println("Estado inicial");
+        printInfo(estado); // Muestra heurisiticas para estado inicial
+        printSep();
+
         // Set heuristic function
         if (heuristic.equals("Max")) {
             DFSHeuristicFunction.setHeurisitcFunction(new DFSHeuristicFunctionMax());
@@ -100,7 +108,6 @@ public class Main {
         final double lamb=0.001;
 
         if (algorithm.equals("SA") || algorithm.equals("ALL")) {
-            System.out.println("SA");
             DFSHillSimulatedAnnealing(estado, steps, stiter, k, lamb);
         }
 
@@ -117,7 +124,9 @@ public class Main {
             System.out.println();
 
             printActions(agent.getActions());
+            printInfo((DFSEstado) search.getGoalState());
             printInstrumentation(agent.getInstrumentation());
+            printSep();
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -133,13 +142,22 @@ public class Main {
 
             System.out.println();
 
-            printActions(agent.getActions());
+            //printActions(agent.getActions());
+            printInfo((DFSEstado) search.getGoalState());
             printInstrumentation(agent.getInstrumentation());
+            printSep();
+
         } catch(Exception e){
             e.printStackTrace();
         }
     }
 
+    private static void printInfo(DFSEstado estado) {
+        System.out.printf("Estado:\n%s\n", estado.toString());
+        System.out.printf("Coste heurisica Max: %d\n", estado.getHeuristicValueMax());
+        System.out.printf("Coste heurisica Total: %f\n", estado.getHeuristicValueTotal());
+        System.out.printf("Tiempo total de transmission: %d\n", estado.totalTime());
+    }
 
     private static void printInstrumentation(Properties properties) {
         Iterator keys = properties.keySet().iterator();
@@ -153,11 +171,11 @@ public class Main {
     private static void printActions(List actions) {
         for (Object action : actions) {
             System.out.println(action.toString());
-            try {
-                System.out.println(new DFSHeuristicFunction().getHeuristicValue(action));
-            } catch (Exception e) {
-            }
         }
+    }
+
+    private static void printSep() {
+        System.out.println("--------------------------------------------------------------------------------");
     }
     
 }
