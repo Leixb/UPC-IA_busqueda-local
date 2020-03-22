@@ -105,6 +105,10 @@ public class DFSEstado {
         return totalTime*sd; //TODO: mejorar como hacer esta heuristica
     }
 
+    public int totalTime() {
+        return transmissionTimes().stream().reduce(0, Integer::sum);
+    }
+
     // changes server that gives file for ith request.
     public void set(final int i, final int serv) {
         last_id = i;
@@ -136,8 +140,11 @@ public class DFSEstado {
 
     @Override
     public String toString() {
-        return String.format("ID(%d): %d --> %d", last_id, last_orig, last_new);
-        //return Arrays.toString(servidor);
+        return Arrays.toString(servidor);
+    }
+
+    public String lastChangeString() {
+        return String.format("%d --> %d", last_orig, last_new);
     }
 
 }
