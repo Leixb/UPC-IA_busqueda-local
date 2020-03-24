@@ -12,9 +12,9 @@ public class DFSSuccessorFunctionSA implements SuccessorFunction {
 
     @Override
     public List<Successor> getSuccessors(Object arg0) {
-        List<Successor>       retVal = new ArrayList<Successor>();
-        DFSEstado             estado = (DFSEstado) arg0;
-        DFSHeuristicFunction  DFSHF  = new DFSHeuristicFunction();
+        List<Successor> retVal = new ArrayList<Successor>();
+        DFSEstado estado = (DFSEstado) arg0;
+        DFSHeuristicFunction DFSHF = new DFSHeuristicFunction();
 
         Random rand = new Random();
 

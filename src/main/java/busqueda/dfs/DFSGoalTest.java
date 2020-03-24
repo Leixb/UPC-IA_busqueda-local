@@ -8,5 +8,4 @@ public class DFSGoalTest implements GoalTest {
     public boolean isGoalState(Object arg0) {
         return false;
     }
-
 }

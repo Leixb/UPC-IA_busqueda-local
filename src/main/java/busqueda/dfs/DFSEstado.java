@@ -13,9 +13,8 @@ import IA.DistFS.Servers;
 public class DFSEstado {
 
     // Para cada id de request, id del server que proveera el archivo.
-    private final int []servidor;
+    private final int[] servidor;
 
-    private int last_id = -1;
     private int last_orig = -1;
     private int last_new = -1;
 
@@ -32,7 +31,7 @@ public class DFSEstado {
     public DFSEstado(boolean findSmallest) {
         // loop through the requests and assign first server.
         servidor = new int[requests.size()];
-        for (int i=0; i < requests.size(); ++i) {
+        for (int i = 0; i < requests.size(); ++i) {
             // [UserID, FileID]
             final int[] req = requests.getRequest(i);
             final int userID = req[0];
@@ -58,24 +57,24 @@ public class DFSEstado {
                     }
                 }
             }
-
         }
     }
 
-    public DFSEstado(final int[] estado)  {
+    public DFSEstado(final int[] estado) {
         // Copiamos el array
         this.servidor = Arrays.copyOf(estado, estado.length);
     }
 
     // Maximo transmission total de los servidores
     public int getHeuristicValueMax() {
-        //return Collections.max(transmissionTimes());
+        // return Collections.max(transmissionTimes());
         return transmissionTimes().stream().reduce(0, Integer::max);
     }
 
     private List<Integer> transmissionTimes() {
-        List<Integer> transTime = IntStream.of(new int[DFSEstado.nserv]).boxed().collect(Collectors.toList());
-        for (int i=0; i < requests.size(); ++i) {
+        List<Integer> transTime =
+                IntStream.of(new int[DFSEstado.nserv]).boxed().collect(Collectors.toList());
+        for (int i = 0; i < requests.size(); ++i) {
             // [UserID, FileID]
             final int userID = requests.getRequest(i)[0];
             final int serverID = servidor[i];
@@ -86,7 +85,6 @@ public class DFSEstado {
         return transTime;
     }
 
-
     // Suma total de transmission total de los servidores con penalizacion por
     // cargas muy distintas
     public double getHeuristicValueTotal() {
@@ -94,15 +92,15 @@ public class DFSEstado {
 
         final int totalTime = transTimes.stream().reduce(0, Integer::sum);
 
-        final double mean = totalTime/servers.size();
+        final double mean = totalTime / servers.size();
 
         double sd = 0.0; // standard deviation
         for (Integer time : transTimes) {
             sd += Math.pow(mean - time, 2);
         }
-        sd = Math.sqrt(sd/servers.size());
+        sd = Math.sqrt(sd / servers.size());
 
-        return totalTime*sd; //TODO: mejorar como hacer esta heuristica
+        return totalTime * sd; // TODO: mejorar como hacer esta heuristica
     }
 
     public int totalTime() {
@@ -111,7 +109,6 @@ public class DFSEstado {
 
     // changes server that gives file for ith request.
     public void set(final int i, final int serv) {
-        last_id = i;
         last_orig = servidor[i];
         last_new = serv;
 
@@ -146,5 +143,4 @@ public class DFSEstado {
     public String lastChangeString() {
         return String.format("%d --> %d", last_orig, last_new);
     }
-
 }

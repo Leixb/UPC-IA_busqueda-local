@@ -6,7 +6,7 @@ public class DFSHeuristicFunction implements HeuristicFunction {
 
     static HeuristicFunction func = new DFSHeuristicFunctionMax(); // Default to Max
 
-    static public void setHeurisitcFunction(HeuristicFunction f) {
+    public static void setHeurisitcFunction(HeuristicFunction f) {
         func = f;
     }
 
@@ -14,5 +14,4 @@ public class DFSHeuristicFunction implements HeuristicFunction {
     public double getHeuristicValue(Object arg0) {
         return func.getHeuristicValue(arg0);
     }
-
 }

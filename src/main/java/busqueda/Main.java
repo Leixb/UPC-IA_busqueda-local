@@ -1,12 +1,9 @@
 package busqueda;
 
-import busqueda.dfs.*;
-
-import java.util.Random;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Random;
 
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
@@ -16,6 +13,13 @@ import aima.search.framework.Search;
 import aima.search.framework.SearchAgent;
 import aima.search.informed.HillClimbingSearch;
 import aima.search.informed.SimulatedAnnealingSearch;
+import busqueda.dfs.DFSEstado;
+import busqueda.dfs.DFSGoalTest;
+import busqueda.dfs.DFSHeuristicFunction;
+import busqueda.dfs.DFSHeuristicFunctionMax;
+import busqueda.dfs.DFSHeuristicFunctionTotal;
+import busqueda.dfs.DFSSuccessorFunction;
+import busqueda.dfs.DFSSuccessorFunctionSA;
 
 public class Main {
 
@@ -24,11 +28,11 @@ public class Main {
         Random rand = new Random();
 
         int nserv = 50,
-            nrep = 5,
-            users = 200,
-            requests = 5,
-            seeds = rand.nextInt(),
-            seedr = rand.nextInt();
+                nrep = 5,
+                users = 200,
+                requests = 5,
+                seeds = rand.nextInt(),
+                seedr = rand.nextInt();
 
         String algorithm = "ALL"; // ALL / HC / SA
         String heuristic = "Max"; // Max / Total
@@ -66,21 +70,18 @@ public class Main {
         System.out.println("Configuracion");
         System.out.printf(
                 "findSmallest = %b\nnserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
-                + "seeds = %d\nseedr = %d\n", 
-            generador==1,
-            nserv , nrep , users, requests ,
-            seeds , seedr
-            );
+                        + "seeds = %d\nseedr = %d\n",
+                generador == 1, nserv, nrep, users, requests, seeds, seedr);
 
         Servers serv;
-		try {
-			serv = new Servers(nserv, nrep, seeds);
+        try {
+            serv = new Servers(nserv, nrep, seeds);
             Requests req = new Requests(users, requests, seedr);
 
             DFSEstado.init(serv, req, nserv);
-		} catch (WrongParametersException e) {
-			e.printStackTrace();
-		}
+        } catch (WrongParametersException e) {
+            e.printStackTrace();
+        }
 
         // Set generador
         final boolean findSmallest = (generador == 1);
@@ -102,22 +103,23 @@ public class Main {
             DFSHillClimbingSearch(estado);
         }
 
-        final int steps=2000,
-                  stiter=100,
-                  k=5;
-        final double lamb=0.001;
+        final int steps = 2000, stiter = 100, k = 5;
+        final double lamb = 0.001;
 
         if (algorithm.equals("SA") || algorithm.equals("ALL")) {
             DFSHillSimulatedAnnealing(estado, steps, stiter, k, lamb);
         }
-
     }
 
     private static void DFSHillClimbingSearch(DFSEstado estado) {
         System.out.println("\nDistFS HillClimbing --> ");
         try {
-            Problem problem = new Problem(estado, new DFSSuccessorFunction(),
-                    new DFSGoalTest(), new DFSHeuristicFunction());
+            Problem problem =
+                    new Problem(
+                            estado,
+                            new DFSSuccessorFunction(),
+                            new DFSGoalTest(),
+                            new DFSHeuristicFunction());
             Search search = new HillClimbingSearch();
             SearchAgent agent = new SearchAgent(problem, search);
 
@@ -127,27 +129,32 @@ public class Main {
             printInfo((DFSEstado) search.getGoalState());
             printInstrumentation(agent.getInstrumentation());
             printSep();
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void DFSHillSimulatedAnnealing(DFSEstado estado, int steps, int stiter, int k, double lamb) {
+    private static void DFSHillSimulatedAnnealing(
+            DFSEstado estado, int steps, int stiter, int k, double lamb) {
         System.out.println("\nDistFS Simulated Annealing --> ");
         try {
-            Problem problem = new Problem(estado, new DFSSuccessorFunctionSA(),
-                    new DFSGoalTest(), new DFSHeuristicFunction());
+            Problem problem =
+                    new Problem(
+                            estado,
+                            new DFSSuccessorFunctionSA(),
+                            new DFSGoalTest(),
+                            new DFSHeuristicFunction());
             Search search = new SimulatedAnnealingSearch(steps, stiter, k, lamb);
             SearchAgent agent = new SearchAgent(problem, search);
 
             System.out.println();
 
-            //printActions(agent.getActions());
+            // printActions(agent.getActions());
             printInfo((DFSEstado) search.getGoalState());
             printInstrumentation(agent.getInstrumentation());
             printSep();
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -167,7 +174,7 @@ public class Main {
             System.out.println(key + " : " + property);
         }
     }
-    
+
     private static void printActions(List actions) {
         for (Object action : actions) {
             System.out.println(action.toString());
@@ -175,7 +182,7 @@ public class Main {
     }
 
     private static void printSep() {
-        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println(
+                "--------------------------------------------------------------------------------");
     }
-    
 }
