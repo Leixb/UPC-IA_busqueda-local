@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+import javax.swing.plaf.synth.SynthStyle;
+
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
 import IA.DistFS.Servers.WrongParametersException;
@@ -22,6 +24,9 @@ import busqueda.dfs.DFSSuccessorFunction;
 import busqueda.dfs.DFSSuccessorFunctionSA;
 
 public class Main {
+
+    private static Servers serv;
+    private static Requests req;
 
     public static void main(String[] args) {
 
@@ -73,15 +78,15 @@ public class Main {
                         + "seeds = %d\nseedr = %d\n",
                 generador == 1, nserv, nrep, users, requests, seeds, seedr);
 
-        Servers serv;
+        req = new Requests(users, requests, seedr);
         try {
             serv = new Servers(nserv, nrep, seeds);
-            Requests req = new Requests(users, requests, seedr);
-
-            DFSEstado.init(serv, req, nserv);
         } catch (WrongParametersException e) {
             e.printStackTrace();
         }
+        DFSEstado.init(serv, req, nserv);
+
+        System.out.printf("num requests: %d\n", req.size());
 
         // Set generador
         final boolean findSmallest = (generador == 1);
@@ -164,6 +169,20 @@ public class Main {
         System.out.printf("Coste heurisica Max: %d\n", estado.getHeuristicValueMax());
         System.out.printf("Coste heurisica Total: %f\n", estado.getHeuristicValueTotal());
         System.out.printf("Tiempo total de transmission: %d\n", estado.totalTime());
+        if (System.getenv("DEBUG") != null) printDebugEstado(estado);
+    }
+
+    private static void printDebugEstado(DFSEstado estado) {
+        int []serverIDs = estado.getEstado();
+        System.out.printf("%s\t%s\t%s\t%s\t%s\n", "request", "user", "file", "server", "time");
+        for (int i = 0; i < serverIDs.length; i++) {
+            final int serverID = serverIDs[i];
+            final int[] request = req.getRequest(i);
+            final int userID = request[0];
+            final int fileID = request[1];
+
+            System.out.printf("%d\t%d\t%d\t%d\t%d\n", i, userID, fileID, serverID, serv.tranmissionTime(serverID, userID));
+        }
     }
 
     private static void printInstrumentation(Properties properties) {
