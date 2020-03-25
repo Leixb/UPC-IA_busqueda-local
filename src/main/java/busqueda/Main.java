@@ -74,8 +74,10 @@ public class Main {
 
         System.out.println("Configuracion");
         System.out.printf(
-                "findSmallest = %b\nnserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
+                "algo = %s\nheu = %s\n"
+                        + "findSmallest = %b\nnserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
                         + "seeds = %d\nseedr = %d\n",
+                algorithm, heuristic,
                 generador == 1, nserv, nrep, users, requests, seeds, seedr);
 
         req = new Requests(users, requests, seedr);
