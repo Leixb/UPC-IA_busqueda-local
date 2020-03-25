@@ -2,11 +2,7 @@ package busqueda.dfs;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
-import java.util.OptionalInt;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;

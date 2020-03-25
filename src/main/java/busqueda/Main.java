@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.swing.plaf.synth.SynthStyle;
-
 import IA.DistFS.Requests;
 import IA.DistFS.Servers;
 import IA.DistFS.Servers.WrongParametersException;
