@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.Arrays;
 
 public class DFSSuccessorFunctionSA implements SuccessorFunction {
 
@@ -14,7 +15,11 @@ public class DFSSuccessorFunctionSA implements SuccessorFunction {
     public List<Successor> getSuccessors(Object arg0) {
         List<Successor> retVal = new ArrayList<Successor>();
         DFSEstado estado = (DFSEstado) arg0;
+        DFSEstado transmissionTimes = (DFSEstado) arg0;
         DFSHeuristicFunction DFSHF = new DFSHeuristicFunction();
+
+        final int [] TransTime = transmissionTimes.getTransmissionTimes();
+        final int totalTime = Arrays.stream(TransTime).sum();
 
         Random rand = new Random();
 
@@ -39,7 +44,7 @@ public class DFSSuccessorFunctionSA implements SuccessorFunction {
             it++;
         }
 
-        DFSEstado newEstado = new DFSEstado(estado.getEstado());
+        DFSEstado newEstado = new DFSEstado(estado.getEstado(), TransTime, totalTime);
         newEstado.set(i, location);
 
         final double v = DFSHF.getHeuristicValue(newEstado);

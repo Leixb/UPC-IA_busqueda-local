@@ -14,10 +14,13 @@ public class DFSEstado {
 
     private int last_orig = -1;
     private int last_new = -1;
+    private int []transTimes;
+    private int totalTime = 0;
 
     private static Servers servers;
     private static Requests requests;
     private static int nserv;
+
 
     public static void init(final Servers serv, final Requests req, int nserv) {
         DFSEstado.servers = serv;
@@ -28,6 +31,9 @@ public class DFSEstado {
     public DFSEstado(boolean findSmallest) {
         // loop through the requests and assign first server.
         servidor = new int[requests.size()];
+        transTimes = transmissionTimes();
+        totalTime = Arrays.stream(transTimes).sum();
+
         for (int i = 0; i < requests.size(); ++i) {
             // [UserID, FileID]
             final int[] req = requests.getRequest(i);
@@ -57,14 +63,16 @@ public class DFSEstado {
         }
     }
 
-    public DFSEstado(final int[] estado) {
+    public DFSEstado(final int[] estado, int[] transmissionTimes, int tiempoTotal) {
         // Copiamos el array
         this.servidor = Arrays.copyOf(estado, estado.length);
+        transTimes = Arrays.copyOf(transmissionTimes, transmissionTimes.length);
+        totalTime = tiempoTotal;
     }
 
     // Maximo transmission total de los servidores
     public int getHeuristicValueMax() {
-        return Arrays.stream(transmissionTimes()).max().getAsInt();
+        return Arrays.stream(transTimes).max().getAsInt();
     }
 
     private int[] transmissionTimes() {
@@ -81,10 +89,6 @@ public class DFSEstado {
     // Suma total de transmission total de los servidores con penalizacion por
     // cargas muy distintas
     public double getHeuristicValueTotal() {
-        int []transTimes = transmissionTimes();
-
-        final int totalTime = Arrays.stream(transTimes).sum();
-
         final double mean = totalTime / servers.size();
 
         double sd = 0.0; // standard deviation
@@ -97,7 +101,7 @@ public class DFSEstado {
     }
 
     public int totalTime() {
-        return Arrays.stream(transmissionTimes()).sum();
+        return totalTime;
     }
 
     // changes server that gives file for ith request.
@@ -106,6 +110,15 @@ public class DFSEstado {
         last_new = serv;
 
         servidor[i] = serv;
+
+        final int userID = requests.getRequest(i)[0];
+        final int serverID = servidor[i];
+        final int tiempoanterior = transTimes[i];
+
+        transTimes[i] =  servers.tranmissionTime(serverID, userID);
+        totalTime -= tiempoanterior;
+        totalTime += transTimes[i];
+
     }
 
     // All posible file locations for request i different from current one.
@@ -126,6 +139,10 @@ public class DFSEstado {
 
     public int[] getEstado() {
         return servidor.clone();
+    }
+
+    public int[] getTransmissionTimes() {
+        return transTimes.clone();
     }
 
     @Override
