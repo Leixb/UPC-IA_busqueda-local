@@ -9,18 +9,18 @@ import IA.DistFS.Servers;
 
 public class DFSEstado {
 
-    // Para cada id de request, id del server que proveera el archivo.
-    private final int[] servidor;
-
-    private int last_orig = -1;
-    private int last_new = -1;
-    private int []transTimes;
-    private int totalTime = 0;
-
     private static Servers servers;
     private static Requests requests;
     private static int nserv;
 
+    // Para cada id de request, id del server que proveera el archivo.
+    private final int[] reqServer;
+    // Para cada id de request, tiempo que tarda en servir el archivo.
+    private final int[] reqTime;
+    private int totalTime = 0;
+
+    private int last_orig = -1;
+    private int last_new = -1;
 
     public static void init(final Servers serv, final Requests req, int nserv) {
         DFSEstado.servers = serv;
@@ -30,9 +30,8 @@ public class DFSEstado {
 
     public DFSEstado(boolean findSmallest) {
         // loop through the requests and assign first server.
-        servidor = new int[requests.size()];
-        transTimes = transmissionTimes();
-        totalTime = Arrays.stream(transTimes).sum();
+        reqServer = new int[requests.size()];
+        reqTime = new int[requests.size()];
 
         for (int i = 0; i < requests.size(); ++i) {
             // [UserID, FileID]
@@ -46,42 +45,44 @@ public class DFSEstado {
             if (!it.hasNext()) {
                 throw new RuntimeException("No file locations for given fileID");
             }
-            servidor[i] = it.next(); // serverID
+            reqServer[i] = it.next(); // serverID
 
             // If findSmallest is true, find the server with the smallest trans time to the user
             if (findSmallest) {
-                int mn = servers.tranmissionTime(servidor[i], userID);
+                int mn = servers.tranmissionTime(reqServer[i], userID);
                 while (it.hasNext()) { // Loop through all the servers that have fileID
                     final int serverID = it.next();
                     final int transTime = servers.tranmissionTime(serverID, userID);
                     if (transTime < mn) {
                         mn = transTime;
-                        servidor[i] = serverID;
+                        reqServer[i] = serverID;
                     }
                 }
             }
+            reqTime[i] = servers.tranmissionTime(reqServer[i], userID);
+            totalTime += reqTime[i];
         }
     }
 
     public DFSEstado(final int[] estado, int[] transmissionTimes, int tiempoTotal) {
         // Copiamos el array
-        this.servidor = Arrays.copyOf(estado, estado.length);
-        transTimes = Arrays.copyOf(transmissionTimes, transmissionTimes.length);
-        totalTime = tiempoTotal;
+        this.reqServer = Arrays.copyOf(estado, estado.length);
+        this.reqTime = Arrays.copyOf(transmissionTimes, transmissionTimes.length);
+        this.totalTime = tiempoTotal;
     }
 
     // Maximo transmission total de los servidores
     public int getHeuristicValueMax() {
-        return Arrays.stream(transTimes).max().getAsInt();
+        return Arrays.stream(serverTransTimes()).max().getAsInt();
     }
 
-    private int[] transmissionTimes() {
+    private int[] serverTransTimes() {
         int []transTime = new int[DFSEstado.nserv];
         for (int i = 0; i < requests.size(); ++i) {
             // [UserID, FileID]
             final int userID = requests.getRequest(i)[0];
-            final int serverID = servidor[i];
-            transTime[serverID] +=  servers.tranmissionTime(serverID, userID);
+            final int serverID = reqServer[i];
+            transTime[serverID] += servers.tranmissionTime(serverID, userID);
         }
         return transTime;
     }
@@ -92,7 +93,7 @@ public class DFSEstado {
         final double mean = totalTime / servers.size();
 
         double sd = 0.0; // standard deviation
-        for (int time : transTimes) {
+        for (int time : serverTransTimes()) {
             sd += Math.pow(mean - time, 2);
         }
         sd = Math.sqrt(sd / servers.size());
@@ -106,18 +107,17 @@ public class DFSEstado {
 
     // changes server that gives file for ith request.
     public void set(final int i, final int serv) {
-        last_orig = servidor[i];
+        last_orig = reqServer[i];
         last_new = serv;
 
-        servidor[i] = serv;
+        reqServer[i] = serv;
+
+        totalTime -= reqTime[i];
 
         final int userID = requests.getRequest(i)[0];
-        final int serverID = servidor[i];
-        final int tiempoanterior = transTimes[i];
 
-        transTimes[i] =  servers.tranmissionTime(serverID, userID);
-        totalTime -= tiempoanterior;
-        totalTime += transTimes[i];
+        reqTime[i] =  servers.tranmissionTime(serv, userID);
+        totalTime += reqTime[i];
 
     }
 
@@ -126,7 +126,7 @@ public class DFSEstado {
         final int[] req = requests.getRequest(i);
 
         final Set<Integer> locations = servers.fileLocations(req[1]);
-        locations.remove(servidor[i]);
+        locations.remove(reqServer[i]);
 
         return locations;
     }
@@ -134,20 +134,20 @@ public class DFSEstado {
     /* funcions auxiliars */
 
     public int size() {
-        return servidor.length; // == requests.size()
+        return reqServer.length; // == requests.size()
     }
 
     public int[] getEstado() {
-        return servidor.clone();
+        return reqServer.clone();
     }
 
     public int[] getTransmissionTimes() {
-        return transTimes.clone();
+        return reqTime.clone();
     }
 
     @Override
     public String toString() {
-        return Arrays.toString(servidor);
+        return Arrays.toString(reqServer);
     }
 
     public String lastChangeString() {
