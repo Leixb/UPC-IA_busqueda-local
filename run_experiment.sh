@@ -7,10 +7,12 @@ DIR=data
 REPORT="${DIR}/report.txt"
 HOST="$(hostname)"
 
+GIT="$(git rev-parse --short HEAD)"
+
 LOGFILE="${DIR}/logs.txt"
 
 if [ ! -f "$REPORT" ]; then
-    echo "host file experiment ALG HEU GEN NSERV NREP USERS REQUESTS SEED time" >"$REPORT"
+    echo "host commit file experiment ALG HEU GEN NSERV NREP USERS REQUESTS SEED time" >"$REPORT"
 fi
 
 trap "exit" INT
@@ -44,7 +46,7 @@ function gen_report() {
 
         runtime="$(get_time "$OUT_FILE_I")"
 
-        echo "$HOST $OUT_FILE_I $NAME $ARGS ${runtime}"
+        echo "$HOST ${GIT}? $OUT_FILE_I $NAME $ARGS ${runtime}"
     done
 }
 
@@ -79,7 +81,7 @@ function run_experiment() {
         runtime="$(get_time "$OUT_FILE_I")"
 
         echo -e "\r  - DONE repetition $i >${OUT_FILE_I} in ${runtime} seconds"
-        echo "$HOST $OUT_FILE_I $NAME $ARGS ${runtime}" >>"$REPORT"
+        echo "$HOST $GIT $OUT_FILE_I $NAME $ARGS ${runtime}" >>"$REPORT"
     done
 }
 
