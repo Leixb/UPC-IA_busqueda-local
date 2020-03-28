@@ -177,6 +177,16 @@ function ex7() {
     done
 }
 
+function ex2() {
+    NAME="${FUNCNAME[0]}"
+    GEN=0
+    OUTPUT="${DIR}/${NAME}-${GEN}"
+    run_experiment
+    GEN=1
+    OUTPUT="${DIR}/${NAME}-${GEN}"
+    run_experiment
+}
+
 function ex4() {
     ex4_s "$@"
     ex4_u "$@"
