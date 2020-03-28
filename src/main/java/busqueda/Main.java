@@ -108,9 +108,9 @@ public class Main {
             DFSHillClimbingSearch(estado);
         }
 
-        final int steps = 2000, stiter = 100, k = 5;
-        final double lamb = 0.001;
-
+        final int steps = 500000, stiter = 100, k = 20;
+        final double lamb = 0.005;
+        
         if (algorithm.equals("SA") || algorithm.equals("ALL")) {
             DFSHillSimulatedAnnealing(estado, steps, stiter, k, lamb);
         }
