@@ -70,12 +70,29 @@ public class Main {
             }
         }
 
+        int steps = 500000, stiter = 100, k = 20;
+        double lamb = 0.005;
+
+        if (args.length > 8) {
+            steps = Integer.parseInt(args[8]);
+        }
+        if (args.length > 9) {
+            stiter = Integer.parseInt(args[9]);
+        }
+        if (args.length > 10) {
+            k = Integer.parseInt(args[10]);
+        }
+        if (args.length > 11) {
+            lamb = Float.parseFloat(args[11]);
+        }
+
         System.out.println("Configuracion");
         System.out.printf(
                 "algo = %s\nheu = %s\n"
                         + "findSmallest = %b\nnserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
-                        + "seeds = %d\nseedr = %d\n",
-                algorithm, heuristic, generador == 1, nserv, nrep, users, requests, seeds, seedr);
+                        + "seeds = %d\nseedr = %d\n"
+                        + "steps = %d\nstiter = %d\nk = %d\nlamb = %f\n",
+                algorithm, heuristic, generador == 1, nserv, nrep, users, requests, seeds, seedr, steps, stiter, k, lamb);
 
         req = new Requests(users, requests, seedr);
         try {
@@ -106,9 +123,6 @@ public class Main {
         if (algorithm.equals("HC") || algorithm.equals("ALL")) {
             DFSHillClimbingSearch(estado);
         }
-
-        final int steps = 500000, stiter = 100, k = 20;
-        final double lamb = 0.005;
 
         if (algorithm.equals("SA") || algorithm.equals("ALL")) {
             DFSHillSimulatedAnnealing(estado, steps, stiter, k, lamb);

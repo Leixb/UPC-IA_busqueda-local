@@ -11,7 +11,8 @@ GIT="$(git rev-parse --short HEAD)"
 
 LOGFILE="${DIR}/logs.txt"
 
-HEADER="host commit file experiment ALG HEU GEN NSERV NREP USERS REQUESTS SEED time ttt heuM heuT" 
+HEADER="host commit file experiment ALG HEU GEN NSERV NREP USERS REQUESTS SEED STEPS STITER K LAMB time ttt heuM heuT" 
+
 
 if [ ! -f "$REPORT" ]; then
     echo "$HEADER" >"$REPORT"
@@ -38,6 +39,11 @@ function gen_report() {
     HEU='Max?'
     GEN='1?'
     SEED=rand
+
+    STEPS='500000?'
+    STITER='100?'
+    K='20?'
+    LAMB='0.005?'
 
     HOST="${HOST}?"
     GIT="${GIT}?"
@@ -73,12 +79,22 @@ function gen_report() {
         MAX=$(get_var "$OUT_FILE_I" 'Max')
         TOTAL=$(get_var "$OUT_FILE_I" 'Total')
 
+        STEPS_=$(get_var "$OUT_FILE_I" '^steps')
+        STEPS_=${STEPS_:-$STEPS}
+        STITER_=$(get_var "$OUT_FILE_I" '^stiter ')
+        STITER_=${STITER_:-$STITER}
+        K_=$(get_var "$OUT_FILE_I" '^k ')
+        K_=${K_:-$K}
+        LAMB_=$(get_var "$OUT_FILE_I" '^lamb')
+        LAMB_=${LAMB_:-$LAMB}
+
         GEN_=$(get_var "$OUT_FILE_I" '^findSmallest')
         [[ $GEN_ = true ]] && GEN_="1"
         [[ $GEN_ = false ]] && GEN_="0"
         GEN_=${GEN_:-$GEN}
 
         ARGS="$ALG_ $HEU_ $GEN_ $NSERV $NREP $USERS $REQUESTS ${SEED}(${SEEDS},${SEEDR})"
+        ARGS="$ARGS $STEPS_ $STITER_ $K_ $LAMB_"
 
         runtime="$(get_time "$OUT_FILE_I")"
 
@@ -99,10 +115,18 @@ function run_experiment() {
     REQUESTS=${REQUESTS:-5}
 
     SEED=${SEED:-1234}
+
+    STEPS=${STEPS:-500000}
+    STITER=${STITER:-100}
+    K=${K:-20}
+    LAMB=${LAMB:-0.005}
+
     OUTPUT="${OUTPUT:-experiment}"
     OUT_FILE="$(mktemp -u "$OUTPUT-XXXX")"
 
     ARGS="$ALG $HEU $GEN $NSERV $NREP $USERS $REQUESTS $SEED"
+
+    SA="$STEPS $STITER $K $LAMB"
 
     local MAX
     local TOTAL
@@ -116,7 +140,7 @@ function run_experiment() {
         echo -n " Running repetition $i >${OUT_FILE_I}: ..."
 
         echo -e "host = $HOST\ncommit = $GIT\n" >"${OUT_FILE_I}"
-        ./gradlew run --info --args "$ARGS" >>"${OUT_FILE_I}" 2>&1
+        ./gradlew run --info --args "$ARGS $SA" >>"${OUT_FILE_I}" 2>&1
 
         TTT=$(get_var "$OUT_FILE_I" '^Tiempo')
         MAX=$(get_var "$OUT_FILE_I" 'Max')
@@ -128,7 +152,7 @@ function run_experiment() {
         runtime="$(get_time "$OUT_FILE_I")"
 
         echo -e "\r  - DONE repetition $i >${OUT_FILE_I} in ${runtime} seconds"
-        echo "$HOST $GIT $OUT_FILE_I $NAME ${ARGS}($SEEDS,$SEEDR) ${runtime} $TTT $MAX $TOTAL" >>"$REPORT"
+        echo "$HOST $GIT $OUT_FILE_I $NAME ${ARGS}($SEEDS,$SEEDR) $SA ${runtime} $TTT $MAX $TOTAL" >>"$REPORT"
     done
 }
 
@@ -138,7 +162,7 @@ function ex4_s() {
     SEED="rand"
     NSERV=${2:-50}
     local INC=50
-    local MAX=${1:-500}
+    local MAX=${1:-1000}
     echo "NSERV from $NSERV -> $MAX (+$INC)"
     while (( NSERV <= MAX )); do
         OUTPUT="${OUTPUT_BASE}-${NSERV}"
@@ -153,7 +177,7 @@ function ex4_u() {
     SEED="rand"
     USERS=${2:-100}
     local INC=100
-    local MAX=${1:-700}
+    local MAX=${1:-1000}
     echo "USERS from $USERS -> $MAX (+$INC)"
     while (( USERS <= MAX )); do
         OUTPUT="${OUTPUT_BASE}-${USERS}"
@@ -190,6 +214,20 @@ function ex2() {
 function ex4() {
     ex4_s "$@"
     ex4_u "$@"
+}
+
+function ex3() {
+    NAME="${FUNCNAME[0]}"
+
+    STEPS=${1:-500000}
+    STITER=${2:-100}
+    K=${3:-20}
+    LAMB=${4:-0.005}
+
+    SA="$STEPS-$STITER-$K-$LAMB"
+
+    OUTPUT="${DIR}/${NAME}-${SA}"
+    run_experiment
 }
 
 
