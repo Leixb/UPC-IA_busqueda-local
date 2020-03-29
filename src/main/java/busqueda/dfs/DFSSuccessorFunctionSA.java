@@ -26,13 +26,7 @@ public class DFSSuccessorFunctionSA implements SuccessorFunction {
         do {
             i = rand.nextInt(estado.size());
             locations = estado.locations(i);
-            if (--max_it <= 0)
-            {
-                for (i = 0; i < estado.size(); ++i ) {
-                    locations = estado.locations(i);
-                    if(!locations.isEmpty()) throw new RuntimeException("cannot find successor to change");
-                }
-            }
+            if (--max_it <= 0) throw new RuntimeException("cannot find successor to change");
         } while (locations.isEmpty());
 
         int item = rand.nextInt(locations.size());
