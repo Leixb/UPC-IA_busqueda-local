@@ -15,6 +15,7 @@ HEADER="host commit file experiment ALG HEU GEN NSERV NREP USERS REQUESTS SEED S
 
 
 if [ ! -f "$REPORT" ]; then
+    mkdir -p $DIR
     echo "$HEADER" >"$REPORT"
 fi
 
@@ -229,6 +230,45 @@ function ex3() {
 
     OUTPUT="${DIR}/${NAME}-${SA}"
     run_experiment
+}
+
+function ex3o() {
+    NAME="${FUNCNAME[0]}"
+    ALG="SA"
+    
+    STEPS=${1:-500000}
+    STITER=${2:-100}
+    K=${3:-20}
+    LAMB=${4:-0.005}
+
+    SA="$STEPS-$STITER-$K-$LAMB"
+
+
+    REP=${REP:-10}
+
+    ALG=${ALG:-HC}
+    HEU=${HEU:-Max}
+    GEN=${GEN:-1}
+
+    NSERV=${NSERV:-50}
+    NREP=${NREP:-5}
+    USERS=${USERS:-200}
+    REQUESTS=${REQUESTS:-5}
+
+    SEED=${SEED:-1234}
+
+    STEPS=${STEPS:-500000}
+    STITER=${STITER:-100}
+    K=${K:-20}
+    LAMB=${LAMB:-0.005}
+
+    ARGS="$ALG $HEU $GEN $NSERV $NREP $USERS $REQUESTS $SEED"
+
+    SA="$STEPS $STITER $K $LAMB"
+
+    echo step heuM heuT
+    SHOW_STEPS=1 ./gradlew run --info --args "$ARGS $SA" 2>&1 | grep '^STEP' | cut -d' ' -f2,3,4
+
 }
 
 
