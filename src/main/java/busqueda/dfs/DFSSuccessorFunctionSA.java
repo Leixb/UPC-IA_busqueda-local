@@ -41,7 +41,10 @@ public class DFSSuccessorFunctionSA implements SuccessorFunction {
 
         DFSEstado newEstado =
                 new DFSEstado(
-                        estado.getEstado(), estado.getTransmissionTimes(), estado.totalTime());
+                        estado.getEstado(),
+                        estado.getTransmissionTimes(),
+                        estado.getServerTimes(),
+                        estado.totalTime());
         newEstado.set(i, location);
 
         final double v = DFSHF.getHeuristicValue(newEstado);
