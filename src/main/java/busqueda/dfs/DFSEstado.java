@@ -131,7 +131,6 @@ public class DFSEstado {
     public Set<Integer> locations(final int i) {
         final int[] req = requests.getRequest(i);
 
-        // final Set<Integer> locations = servers.fileLocations(req[1]);
         final Set<Integer> locations = new HashSet<Integer> (servers.fileLocations(req[1]));
         locations.remove(reqServer[i]);
 
