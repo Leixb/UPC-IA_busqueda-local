@@ -115,7 +115,7 @@ public class DFSEstado {
         final int rqTimeOld = reqTime[i];
         final int rqTimeNew = servers.tranmissionTime(serv, userID);
 
-        final int svTimeNew = servTime.get(serv) + rqTimeNew;
+        final int svTimeNew = servTime.getOrDefault(serv, 0) + rqTimeNew;
         final int svTimeOld = servTime.get(reqServer[i]) - rqTimeOld;
         servTime.put(serv, svTimeNew);
         servTime.put(reqServer[i], svTimeOld);
