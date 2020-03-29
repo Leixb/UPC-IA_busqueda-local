@@ -218,7 +218,8 @@ function ex4() {
 
 function ex3() {
     NAME="${FUNCNAME[0]}"
-
+    ALG="SA"
+    
     STEPS=${1:-500000}
     STITER=${2:-100}
     K=${3:-20}
