@@ -5,6 +5,7 @@ import aima.search.framework.SuccessorFunction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DFSSuccessorFunction implements SuccessorFunction {
 
@@ -17,10 +18,11 @@ public class DFSSuccessorFunction implements SuccessorFunction {
         final int[] estadoServ = estado.getEstado();
         final int[] estadoTimes = estado.getTransmissionTimes();
         final int estadoTotal = estado.totalTime();
+        final Map<Integer, Integer> servTime = estado.getServerTimes();
 
         for (int i = 0; i < estado.size(); ++i) {
             for (final Integer loc : estado.locations(i)) {
-                DFSEstado newEstado = new DFSEstado(estadoServ, estadoTimes, estadoTotal);
+                DFSEstado newEstado = new DFSEstado(estadoServ, estadoTimes, servTime, estadoTotal);
 
                 newEstado.set(i, loc);
 

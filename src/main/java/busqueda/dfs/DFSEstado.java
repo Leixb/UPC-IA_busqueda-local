@@ -1,7 +1,10 @@
 package busqueda.dfs;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import IA.DistFS.Requests;
@@ -19,6 +22,8 @@ public class DFSEstado {
     private final int[] reqTime;
     private int totalTime = 0;
 
+    private Map<Integer, Integer> servTime;
+
     private int last_orig = -1;
     private int last_new = -1;
 
@@ -32,6 +37,7 @@ public class DFSEstado {
         // loop through the requests and assign first server.
         reqServer = new int[requests.size()];
         reqTime = new int[requests.size()];
+        servTime = new HashMap<Integer, Integer>(DFSEstado.nserv);
 
         for (int i = 0; i < requests.size(); ++i) {
             // [UserID, FileID]
@@ -60,31 +66,25 @@ public class DFSEstado {
                 }
             }
             reqTime[i] = servers.tranmissionTime(reqServer[i], userID);
+            final int svTime = servTime.getOrDefault(reqServer[i], 0) + reqTime[i];
+            servTime.put(reqServer[i], svTime);
             totalTime += reqTime[i];
         }
     }
 
-    public DFSEstado(final int[] estado, int[] transmissionTimes, int tiempoTotal) {
+    public DFSEstado(
+            final int[] rqServer, int[] rqTime, Map<Integer, Integer> svTime, int tiempoTotal) {
         // Copiamos el array
-        this.reqServer = Arrays.copyOf(estado, estado.length);
-        this.reqTime = Arrays.copyOf(transmissionTimes, transmissionTimes.length);
+        this.reqServer = Arrays.copyOf(rqServer, rqServer.length);
+        this.reqTime = Arrays.copyOf(rqTime, rqTime.length);
+        this.servTime = new HashMap<Integer, Integer>(svTime);
+
         this.totalTime = tiempoTotal;
     }
 
     // Maximo transmission total de los servidores
     public int getHeuristicValueMax() {
-        return Arrays.stream(serverTransTimes()).max().getAsInt();
-    }
-
-    private int[] serverTransTimes() {
-        int []transTime = new int[DFSEstado.nserv];
-        for (int i = 0; i < requests.size(); ++i) {
-            // [UserID, FileID]
-            final int userID = requests.getRequest(i)[0];
-            final int serverID = reqServer[i];
-            transTime[serverID] += servers.tranmissionTime(serverID, userID);
-        }
-        return transTime;
+        return Collections.max(servTime.values());
     }
 
     // Suma total de transmission total de los servidores con penalizacion por
@@ -93,7 +93,7 @@ public class DFSEstado {
         final double mean = totalTime / servers.size();
 
         double sd = 0.0; // standard deviation
-        for (int time : serverTransTimes()) {
+        for (int time : servTime.values()) {
             sd += Math.pow(mean - time, 2);
         }
         sd = Math.sqrt(sd / servers.size());
@@ -110,15 +110,20 @@ public class DFSEstado {
         last_orig = reqServer[i];
         last_new = serv;
 
-        reqServer[i] = serv;
-
-        totalTime -= reqTime[i];
-
         final int userID = requests.getRequest(i)[0];
 
-        reqTime[i] =  servers.tranmissionTime(serv, userID);
-        totalTime += reqTime[i];
+        final int rqTimeOld = reqTime[i];
+        final int rqTimeNew = servers.tranmissionTime(serv, userID);
 
+        final int svTimeNew = servTime.get(serv) + rqTimeNew;
+        final int svTimeOld = servTime.get(reqServer[i]) - rqTimeOld;
+        servTime.put(serv, svTimeNew);
+        servTime.put(reqServer[i], svTimeOld);
+
+        totalTime += rqTimeNew - rqTimeOld;
+
+        reqTime[i] = rqTimeNew;
+        reqServer[i] = serv;
     }
 
     // All posible file locations for request i different from current one.
@@ -143,6 +148,10 @@ public class DFSEstado {
 
     public int[] getTransmissionTimes() {
         return reqTime.clone();
+    }
+
+    public Map<Integer, Integer> getServerTimes() {
+        return servTime;
     }
 
     @Override
