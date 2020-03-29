@@ -75,8 +75,7 @@ public class Main {
                 "algo = %s\nheu = %s\n"
                         + "findSmallest = %b\nnserv = %d\nnrep = %d\nusers = %d\nrequests = %d\n"
                         + "seeds = %d\nseedr = %d\n",
-                algorithm, heuristic,
-                generador == 1, nserv, nrep, users, requests, seeds, seedr);
+                algorithm, heuristic, generador == 1, nserv, nrep, users, requests, seeds, seedr);
 
         req = new Requests(users, requests, seedr);
         try {
@@ -110,7 +109,7 @@ public class Main {
 
         final int steps = 500000, stiter = 100, k = 20;
         final double lamb = 0.005;
-        
+
         if (algorithm.equals("SA") || algorithm.equals("ALL")) {
             DFSHillSimulatedAnnealing(estado, steps, stiter, k, lamb);
         }
@@ -173,7 +172,7 @@ public class Main {
     }
 
     private static void printDebugEstado(DFSEstado estado) {
-        int []serverIDs = estado.getEstado();
+        int[] serverIDs = estado.getEstado();
         System.out.printf("%s\t%s\t%s\t%s\t%s\n", "request", "user", "file", "server", "time");
         for (int i = 0; i < serverIDs.length; i++) {
             final int serverID = serverIDs[i];
@@ -181,7 +180,9 @@ public class Main {
             final int userID = request[0];
             final int fileID = request[1];
 
-            System.out.printf("%d\t%d\t%d\t%d\t%d\n", i, userID, fileID, serverID, serv.tranmissionTime(serverID, userID));
+            System.out.printf(
+                    "%d\t%d\t%d\t%d\t%d\n",
+                    i, userID, fileID, serverID, serv.tranmissionTime(serverID, userID));
         }
     }
 
