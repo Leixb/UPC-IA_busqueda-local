@@ -147,6 +147,7 @@ public class Main {
             printInfo((DFSEstado) search.getGoalState());
             printInstrumentation(agent.getInstrumentation());
             printSep();
+            if (System.getenv("SHOW_STEPS") != null) printSteps(search);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,9 +172,22 @@ public class Main {
             printInfo((DFSEstado) search.getGoalState());
             printInstrumentation(agent.getInstrumentation());
             printSep();
+            if (System.getenv("SHOW_STEPS") != null) printSteps(search);
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void printSteps(Search search) {
+        int step = 0;
+        for (Object obj : search.getPathStates()) {
+            DFSEstado estado = (DFSEstado) obj;
+            System.out.printf("STEP %d %d %f\n", 
+                step++,
+                estado.getHeuristicValueMax(),
+                estado.getHeuristicValueTotal()
+            );
         }
     }
 
