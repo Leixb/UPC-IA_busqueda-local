@@ -70,8 +70,8 @@ public class Main {
             }
         }
 
-        int steps = 500000, stiter = 100, k = 1000;
-        double lamb = 0.001;
+        int steps = 1000000, stiter = 10000, k = 10000;
+        double lamb = 0.01;
 
         if (args.length > 8) {
             steps = Integer.parseInt(args[8]);
